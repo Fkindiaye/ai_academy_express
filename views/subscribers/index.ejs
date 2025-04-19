@@ -1,0 +1,36 @@
+<form action="/subscribers/search" method="GET" class="form-inline mb-4">
+    <input type="text" class="form-control" id="search" name="search" placeholder="Rechercher par nom ou code postal" required>
+    <button type="submit" class="btn btn-primary ml-2">Rechercher</button>
+  </form>
+<h2>Liste des abonnés</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Email</th>
+      <th>Code Postal</th>
+      <th>Actions</th> <!-- Nouvelle colonne -->
+    </tr>
+  </thead>
+  <tbody>
+    <% subscribers.forEach(subscriber => { %>
+      <tr>
+        <td>
+          <a href="<%= `/subscribers/${subscriber._id}` %>">
+            <%= subscriber.name %>
+          </a>
+        </td>
+        <td><%= subscriber.email %></td>
+        <td><%= subscriber.zipCode %></td>
+        <td>
+          <!-- ✅ Formulaire de suppression -->
+          <form action="/subscribers/delete/<%= subscriber._id %>" method="POST" onsubmit="return confirm('Supprimer cet abonné ?');" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+<a href="/subscribers/new" class="btn btn-primary">Créer un nouvel abonné</a>
