@@ -25,7 +25,7 @@ next(error);
 });
 },
 indexView: (req, res) => {
-res.render("users/index");
+    res.render("users/index", { users: res.locals.users });
 },
 new: (req, res) => {
 res.render("users/new");
@@ -63,7 +63,7 @@ next(error);
 });
 },
 showView: (req, res) => {
-res.render("users/show");
+  res.render("subscribers/show", { subscriber: res.locals.user });
 },
 edit: (req, res, next) => {
 let userId = req.params.id;
