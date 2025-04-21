@@ -50,20 +50,19 @@ if (redirectPath) res.redirect(redirectPath);
 else next();
 },
 show: (req, res, next) => {
-let userId = req.params.id;
-User.findById(userId)
-.then(user => {
-res.locals.user = user;
-next();
-})
-.catch(error => {
-
-console.log(`Erreur lors de la récupération de l'utilisateur par ID: ${error.message}`);
-next(error);
-});
+    let userId = req.params.id;
+    User.findById(userId)
+    .then(user => {
+        res.locals.user = user;  // Correctement assigner l'utilisateur trouvé
+        next();
+    })
+    .catch(error => {
+        console.log(`Erreur lors de la récupération de l'utilisateur par ID: ${error.message}`);
+        next(error);
+    });
 },
 showView: (req, res) => {
-res.render("users/show");
+    res.render("subscribers/show", { subscriber: res.locals.user });
 },
 edit: (req, res, next) => {
 let userId = req.params.id;
