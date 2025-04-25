@@ -1,110 +1,155 @@
 const User = require("../models/user");
+const jsonWebToken = require("jsonwebtoken");
+
+// 🔐 À sécuriser avec dotenv dans un vrai projet
+const token_key = "votre_cle_secrete";
+
 // Fonction utilitaire pour extraire les paramètres utilisateur du corps de la requête
 const getUserParams = body => {
-return {
-name: {
-first: body.first,
-last: body.last
-},
-email: body.email,
-password: body.password,
-zipCode: body.zipCode
+  return {
+    name: {
+      first: body.first,
+      last: body.last
+    },
+    email: body.email,
+    password: body.password,
+    zipCode: body.zipCode
+  };
 };
-};
+
 module.exports = {
-index: (req, res, next) => {
+  index: (req, res, next) => {
+    User.find({})
+      .then(users => {
+        res.locals.users = users;
+        next();
+      })
+      .catch(error => {
+        console.log(`Erreur lors de la récupération des utilisateurs: ${error.message}`);
+        next(error);
+      });
+  },
 
-User.find({})
-.then(users => {
-res.locals.users = users;
-next();
-})
-.catch(error => {
-console.log(`Erreur lors de la récupération des utilisateurs: ${error.message}`);
-next(error);
-});
-},
-indexView: (req, res) => {
+  indexView: (req, res) => {
     res.render("users/index", { users: res.locals.users });
-},
-new: (req, res) => {
-res.render("users/new");
-},
-create: (req, res, next) => {
-let userParams = getUserParams(req.body);
-User.create(userParams)
-.then(user => {
-res.locals.redirect = "/users";
-res.locals.user = user;
-next();
-})
-.catch(error => {
-console.log(`Erreur lors de la création de l'utilisateur: ${error.message}`);
-res.locals.redirect = "/users/new";
-next();
-});
-},
-redirectView: (req, res, next) => {
-let redirectPath = res.locals.redirect;
-if (redirectPath) res.redirect(redirectPath);
-else next();
-},
-show: (req, res, next) => {
-let userId = req.params.id;
-User.findById(userId)
-.then(user => {
-res.locals.user = user;
-next();
-})
-.catch(error => {
+  },
 
-console.log(`Erreur lors de la récupération de l'utilisateur par ID: ${error.message}`);
-next(error);
-});
-},
-showView: (req, res) => {
-  res.render("subscribers/show", { subscriber: res.locals.user });
-},
-edit: (req, res, next) => {
-let userId = req.params.id;
-User.findById(userId)
-.then(user => {
-res.render("users/edit", {
-user: user
-});
-})
-.catch(error => {
-console.log(`Erreur lors de la récupération de l'utilisateur par ID: ${error.message}`);
-next(error);
-});
-},
-update: (req, res, next) => {
-let userId = req.params.id,
-userParams = getUserParams(req.body);
-User.findByIdAndUpdate(userId, {
-$set: userParams
-})
-.then(user => {
-res.locals.redirect = `/users/${userId}`;
-res.locals.user = user;
-next();
-})
-.catch(error => {
-console.log(`Erreur lors de la mise à jour de l'utilisateur par ID: ${error.message}`);
-next(error);
-});
-},
-delete: (req, res, next) => {
-let userId = req.params.id;
-User.findByIdAndRemove(userId)
-.then(() => {
-res.locals.redirect = "/users";
-next();
-})
+  new: (req, res) => {
+    res.render("users/new");
+  },
 
-.catch(error => {
-console.log(`Erreur lors de la suppression de l'utilisateur par ID: ${error.message}`);
-next();
-});
-}
+  create: (req, res, next) => {
+    let userParams = getUserParams(req.body);
+    User.create(userParams)
+      .then(user => {
+        res.locals.redirect = "/users";
+        res.locals.user = user;
+        next();
+      })
+      .catch(error => {
+        console.log(`Erreur lors de la création de l'utilisateur: ${error.message}`);
+        res.locals.redirect = "/users/new";
+        next();
+      });
+  },
+
+  redirectView: (req, res, next) => {
+    let redirectPath = res.locals.redirect;
+    if (redirectPath) res.redirect(redirectPath);
+    else next();
+  },
+
+  show: (req, res, next) => {
+    let userId = req.params.id;
+    User.findById(userId)
+      .then(user => {
+        res.locals.user = user;
+        next();
+      })
+      .catch(error => {
+        console.log(`Erreur lors de la récupération de l'utilisateur par ID: ${error.message}`);
+        next(error);
+      });
+  },
+
+  showView: (req, res) => {
+    res.render("subscribers/show", { subscriber: res.locals.user });
+  },
+
+  edit: (req, res, next) => {
+    let userId = req.params.id;
+    User.findById(userId)
+      .then(user => {
+        res.render("users/edit", {
+          user: user
+        });
+      })
+      .catch(error => {
+        console.log(`Erreur lors de la récupération de l'utilisateur pour édition: ${error.message}`);
+        next(error);
+      });
+  },
+
+  update: (req, res, next) => {
+    let userId = req.params.id;
+    let userParams = getUserParams(req.body);
+
+    User.findByIdAndUpdate(userId, { $set: userParams })
+      .then(user => {
+        res.locals.redirect = `/users/${userId}`;
+        res.locals.user = user;
+        next();
+      })
+      .catch(error => {
+        console.log(`Erreur lors de la mise à jour de l'utilisateur: ${error.message}`);
+        next(error);
+      });
+  },
+
+  delete: (req, res, next) => {
+    let userId = req.params.id;
+    User.findByIdAndRemove(userId)
+      .then(() => {
+        res.locals.redirect = "/users";
+        next();
+      })
+      .catch(error => {
+        console.log(`Erreur lors de la suppression de l'utilisateur: ${error.message}`);
+        next();
+      });
+  },
+
+  validate: (req, res, next) => {
+    if (!req.body.email || !req.body.password) {
+      req.flash("error", "L'email et le mot de passe sont requis.");
+      res.locals.redirect = "/users/new";
+      next();
+    } else {
+      next();
+    }
+  },
+
+  getApiToken: (req, res) => {
+    if (req.user) {
+      let signedToken = jsonWebToken.sign(
+        {
+          data: req.user._id,
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30
+        },
+        token_key
+      );
+
+      res.render("users/api-token", {
+        token: signedToken
+      });
+    } else {
+      req.flash("error", "Vous devez être connecté pour obtenir un token API.");
+      res.redirect("/login");
+    }
+  },
+
+  //  AJOUT : Méthode pour afficher la page de login
+  login: (req, res) => {
+    res.render("auth/login");
+  }
 };
