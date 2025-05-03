@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const jsonWebToken = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 // 🔐 À sécuriser avec dotenv dans un vrai projet
 const token_key = "votre_cle_secrete";
@@ -61,6 +62,13 @@ module.exports = {
 
   show: (req, res, next) => {
     let userId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log("ID invalide");
+      res.locals.redirect = "/users";
+      return next();
+    }
+
     User.findById(userId)
       .then(user => {
         res.locals.user = user;
@@ -78,6 +86,13 @@ module.exports = {
 
   edit: (req, res, next) => {
     let userId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log("ID invalide");
+      res.locals.redirect = "/users";
+      return next();
+    }
+
     User.findById(userId)
       .then(user => {
         res.render("users/edit", {
@@ -92,6 +107,13 @@ module.exports = {
 
   update: (req, res, next) => {
     let userId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log("ID invalide");
+      res.locals.redirect = "/users";
+      return next();
+    }
+
     let userParams = getUserParams(req.body);
 
     User.findByIdAndUpdate(userId, { $set: userParams })
@@ -108,6 +130,13 @@ module.exports = {
 
   delete: (req, res, next) => {
     let userId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log("ID invalide");
+      res.locals.redirect = "/users";
+      return next();
+    }
+
     User.findByIdAndRemove(userId)
       .then(() => {
         res.locals.redirect = "/users";
@@ -134,7 +163,7 @@ module.exports = {
       let signedToken = jsonWebToken.sign(
         {
           data: req.user._id,
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30 // 30 jours
         },
         token_key
       );
@@ -148,7 +177,7 @@ module.exports = {
     }
   },
 
-  //  AJOUT : Méthode pour afficher la page de login
+  // 🔐 Page de connexion
   login: (req, res) => {
     res.render("auth/login");
   }

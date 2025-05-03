@@ -1,138 +1,42 @@
-views/courses/index.ejs :
 <h2>Liste des cours</h2>
-<table class="table">
-<thead>
-<tr>
-<th>Titre</th>
-<th>Description</th>
-<th>Coût</th>
-<th>Nb Max Étudiants</th>
-<th>Modifier</th>
-<th>Supprimer</th>
 
-</tr>
-</thead>
-<tbody>
-<% courses.forEach(course => { %>
-<tr>
-<td>
-<a href="<%= `/courses/${course._id}` %>">
-<%= course.title %>
-</a>
-</td>
-<td><%= course.description %></td>
-<td><%= course.cost %> €</td>
-<td><%= course.maxStudents %></td>
-<td>
-<a href="<%= `/courses/${course._id}/edit` %>">
-Modifier
-</a>
-</td>
-<td>
-<a href="<%= `/courses/${course._id}/delete?_method=DELETE` %>"
-onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce cours?')">
-Supprimer
-</a>
-</td>
-</tr>
-<% }); %>
-</tbody>
-</table>
-<a href="/courses/new" class="btn btn-primary">Créer un nouveau cours</a>
-views/courses/new.ejs :
-<div class="data-form">
-<form action="/courses/create" method="POST">
-<h2>Créer un nouveau cours:</h2>
-<div class="form-group">
-<label for="inputTitle">Titre</label>
-<input type="text" name="title" id="inputTitle" class="form-control" placeholder="Titre du
-cours" autofocus required>
-</div>
-<div class="form-group">
-<label for="inputDescription">Description</label>
-<textarea name="description" id="inputDescription" class="form-control"
-placeholder="Description du cours" required></textarea>
-</div>
-<div class="form-group">
-<label for="inputMaxStudents">Nombre maximum d'étudiants</label>
-
-<input type="number" name="maxStudents" id="inputMaxStudents" class="form-control"
-placeholder="Nombre maximum d'étudiants" min="0">
-</div>
-<div class="form-group">
-<label for="inputCost">Coût</label>
-<input type="number" name="cost" id="inputCost" class="form-control" placeholder="Coût
-du cours" min="0">
-</div>
-<button type="submit" class="btn btn-primary">Créer</button>
-</form>
-</div>
-
-views/courses/show.ejs :
-<h1>Détails du cours: <%= course.title %></h1>
-<table class="table">
-<tr>
-<th>Titre</th>
-<td><%= course.title %></td>
-</tr>
-<tr>
-<th>Description</th>
-<td><%= course.description %></td>
-</tr>
-<tr>
-<th>Nombre maximum d'étudiants</th>
-<td><%= course.maxStudents %></td>
-</tr>
-<tr>
-<th>Coût</th>
-<td><%= course.cost %> €</td>
-</tr>
-</table>
-<% if (course.students && course.students.length > 0) { %>
-<h3>Étudiants inscrits:</h3>
-<ul>
-<% course.students.forEach(student => { %>
-<li><%= student.fullName %> (<%= student.email %>)</li>
-<% }); %>
-</ul>
+<% if (courses && courses.length > 0) { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Description</th>
+        <th>Coût</th>
+        <th>Nb Max Étudiants</th>
+        <th>Modifier</th>
+        <th>Supprimer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% courses.forEach(course => { %>
+        <tr>
+          <td>
+            <a href="/courses/<%= course._id %>">
+              <%= course.title %>
+            </a>
+          </td>
+          <td><%= course.description %></td>
+          <td><%= course.cost %> €</td>
+          <td><%= course.maxStudents %></td>
+          <td>
+            <a href="/courses/<%= course._id %>/edit" class="btn btn-info">Modifier</a>
+          </td>
+          <td>
+            <form action="/courses/<%= course._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce cours?');">
+              <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
 <% } else { %>
-<h3>Aucun étudiant inscrit pour le moment.</h3>
+  <p>Aucun cours disponible pour le moment.</p>
 <% } %>
-<div class="button-group">
-<a href="/courses" class="btn btn-primary">Tous les cours</a>
-<a href="<%= `/courses/${course._id}/edit` %>" class="btn btn-info">Modifier</a>
 
-<a href="<%= `/courses/${course._id}/delete?_method=DELETE` %>"
-onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce cours?')"
-class="btn btn-danger">
-Supprimer
-</a>
-</div>
-
-views/courses/edit.ejs :
-<div class="data-form">
-<form method="POST" action="<%= `/courses/${course._id}/update?_method=PUT` %>">
-<h2>Modifier le cours:</h2>
-<div class="form-group">
-<label for="inputTitle">Titre</label>
-<input type="text" name="title" id="inputTitle" class="form-control" value="<%= course.title
-%>" placeholder="Titre du cours" autofocus required>
-</div>
-<div class="form-group">
-<label for="inputDescription">Description</label>
-<textarea name="description" id="inputDescription" class="form-control"
-placeholder="Description du cours" required><%= course.description %></textarea>
-</div>
-<div class="form-group">
-<label for="inputMaxStudents">Nombre maximum d'étudiants</label>
-<input type="number" name="maxStudents" id="inputMaxStudents" class="form-control"
-value="<%= course.maxStudents %>" placeholder="Nombre maximum d'étudiants" min="0">
-</div>
-<div class="form-group">
-<label for="inputCost">Coût</label>
-<input type="number" name="cost" id="inputCost" class="form-control" value="<%=
-course.cost %>" placeholder="Coût du cours" min="0">
-</div>
-<button type="submit" class="btn btn-primary">Mettre à jour</button>
-</form>
-</div>
+<a href="/courses/new" class="btn btn-primary">Créer un nouveau cours</a>
