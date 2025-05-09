@@ -1,0 +1,88 @@
+.course-detail { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 2rem 0; 
+    } 
+    .back-button { 
+    background: none; 
+    border: none; 
+    color: #3498db; 
+    cursor: pointer; 
+    font-size: 1rem; 
+    padding: 0; 
+    margin-bottom: 2rem; 
+    display: inline-block; 
+    } 
+    .back-button:hover { 
+    text-decoration: underline; 
+    } 
+    .course-header { 
+    margin-bottom: 2rem; 
+    } 
+    .course-meta { 
+    display: flex; 
+    gap: 20px; 
+    margin-top: 1rem; 
+    } 
+    .course-meta .level, 
+    .course-meta .price { 
+    font-size: 1.2rem; 
+    background-color: #f8f9fa; 
+    padding: 0.5rem 1rem; 
+    border-radius: 5px; 
+    } 
+    .course-meta .price { 
+    font-weight: bold; 
+    color: #3498db; 
+    } 
+    .course-content { 
+    margin-bottom: 3rem;                                                                                                                 
+    } 
+    .course-description, 
+    .course-curriculum { 
+    margin-bottom: 2rem; 
+    } 
+    .course-description h2, 
+    .course-curriculum h2 { 
+    color: #3498db; 
+    margin-bottom: 1rem; 
+    } 
+    .curriculum-modules { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 20px; 
+    } 
+    .module { 
+    background-color: #f8f9fa; 
+    padding: 1.5rem; 
+    border-radius: 5px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    } 
+    .module h3 { 
+    margin-top: 0; 
+    color: #2c3e50; 
+    margin-bottom: 1rem; 
+    } 
+    .module ul { 
+    padding-left: 1.5rem; 
+    } 
+    .module li { 
+    margin-bottom: 0.5rem; 
+    } 
+    .enroll-section { 
+    text-align: center; 
+    background-color: #f8f9fa; 
+    padding: 2rem; 
+    border-radius: 5px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    } 
+    .btn-large { 
+      font-size: 1.2rem; 
+      padding: 15px 30px; 
+      margin-top: 1rem; 
+    } 
+     
+    .course-not-found { 
+      text-align: center; 
+      padding: 3rem 1rem; 
+    }
